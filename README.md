@@ -1,5 +1,7 @@
 # TV Volume Overlay
 
+**Available in English and Dutch.** The app automatically follows your TV's language and uses English for other languages.
+
 A small, free volume display for Android TV apps when sound goes to an HDMI ARC/eARC receiver.
 
 Some TVs send volume commands to the receiver but show no volume bar inside Netflix or other
