@@ -17,7 +17,7 @@ bars. That case is not suppressed in 1.0.0. Position/layout/theme options have n
 Other TV/receiver combinations have not been verified.
 
 
-# Version 1.1 development validation
+# Version 1.1.0 validation
 
 New features: TV-input suppression, position/layout/theme controls, custom/hidden text label,
 full/value-only/hidden numbers, size/duration controls, a full-screen overlay test, and a reversible hidden launcher alias. Settings include an
@@ -62,7 +62,7 @@ Physical TV checks completed on 21 October 2026:
 - Re-ran all 11 JVM and 6 isolated emulator tests, release lint and signed release build after the UI changes.
 - Both README screenshots are fresh, unedited captures of this version on the physical TV.
 
-Remaining device checks before a stable release:
+Device checks not yet completed (release limitations):
 
 - Hide the launcher icon, reopen through this TV’s Accessibility settings and restore it; verify after reboot.
 - Check preferences/service behavior after reboot and repeated input/route changes.
