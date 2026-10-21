@@ -41,4 +41,8 @@
     <string name="overlay_test_badge">TEST · SAMPLE</string>
     <string-array name="sizes"><item>Small (75%)</item><item>Normal (100%)</item><item>Large (125%)</item></string-array>
     <string-array name="durations"><item>1 second</item><item>2 seconds (default)</item><item>3 seconds</item><item>5 seconds</item></string-array>
+    <string name="transparency">Background transparency</string>
+    <string name="transparency_value">Background transparency: %1$d%%</string>
+    <string name="transparency_hint">0% = opaque, 100% = no background or border. Text and bar stay visible. Use left/right to adjust.</string>
+    <string name="numbers_hint">Android/CEC level. The receiver’s display may use another scale; half steps are unavailable.</string>
 </resources>

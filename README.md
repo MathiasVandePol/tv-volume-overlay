@@ -67,6 +67,7 @@ still requires the active ARC/eARC route. The badge remains visible even if you 
 - Six positions: top/bottom, left/center/right.
 - Horizontal or vertical bar; dark, light or black theme.
 - Small (75%), normal (100%) or large (125%) size, scaling the text and bar together.
+- Background transparency from 0% (opaque) to 100% (no background/border). Text and bar remain visible. Default: 8%.
 - Display duration of 1, 2 (default, about 1.9), 3 or 5 seconds.
 - Custom text label (up to 32 characters), or hide the label entirely. Blank custom text restores **Volume**.
 - Number format: **21 / 100**, **21**, or **Hidden**. Hiding both text and numbers leaves just the bar.
@@ -142,6 +143,12 @@ It publishes the APK and `SHA256SUMS`. The repository uses a dedicated release k
 Actions secrets; never commit signing keys or passwords. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Troubleshooting
+
+**Number differs from the receiver / no half steps:** this app reads Android’s integer media-volume
+index. The CEC audio-status volume is also an integer, not the receiver’s original decimal/dB display.
+The receiver can use a different scale, and Android updates can arrive later. The app cannot reconstruct
+missing half steps or guarantee an exact front-panel match. No guessed offset or fake decimals are applied.
+Use the bar without numbers if you prefer. An exact receiver-specific network integration is not included.
 
 **No panel:** verify that the service is enabled, audio is actually routed to ARC/eARC, and the
 receiver reports its volume. Some firmware does not expose those reports to normal apps.

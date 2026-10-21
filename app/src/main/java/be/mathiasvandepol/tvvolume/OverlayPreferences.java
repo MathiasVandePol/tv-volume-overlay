@@ -12,6 +12,7 @@ final class OverlayPreferences {
     OverlayOptions.Numbers numbers() { return OverlayOptions.parse(OverlayOptions.Numbers.class, store.getString("numbers", ""), OverlayOptions.Numbers.FULL); }
     OverlayOptions.Size size() { return OverlayOptions.parse(OverlayOptions.Size.class, store.getString("size", ""), OverlayOptions.Size.NORMAL); }
     OverlayOptions.Duration duration() { return OverlayOptions.parse(OverlayOptions.Duration.class, store.getString("duration", ""), OverlayOptions.Duration.NORMAL); }
+    int transparency() { return OverlayOptions.transparency(store.getInt("transparency", 8)); }
     boolean showLabel() { return store.getBoolean("show_label", true); }
     boolean hideInputs() { return store.getBoolean("hide_inputs", true); }
     String customLabel() { return store.getString("label", ""); }

@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,6 +78,7 @@ public final class AppearanceActivity extends Activity {
         controls.addView(test, new LinearLayout.LayoutParams(-1, dp(48)));
         controls.addView(text(R.string.test_hint, 13));
         choice(controls, R.string.theme, R.array.themes, "theme", OverlayOptions.Theme.values(), options.theme());
+        transparency(controls);
         toggle(controls, R.string.show_label, options.showLabel(), checked -> save("show_label", checked));
         controls.addView(text(R.string.custom_label, 15));
         EditText label = new EditText(this);
@@ -99,6 +101,7 @@ public final class AppearanceActivity extends Activity {
         });
         controls.addView(text(R.string.label_hint, 13));
         choice(controls, R.string.numbers, R.array.number_formats, "numbers", OverlayOptions.Numbers.values(), options.numbers());
+        controls.addView(text(R.string.numbers_hint, 13));
         toggle(controls, R.string.hide_inputs, options.hideInputs(), checked -> save("hide_inputs", checked));
         controls.addView(text(R.string.inputs_hint, 13));
         TextView detection = text(R.string.inputs_found, 13);
@@ -140,6 +143,28 @@ public final class AppearanceActivity extends Activity {
             }
             public void onNothingSelected(AdapterView<?> view) { }
         });
+    }
+    private void transparency(LinearLayout parent) {
+        TextView label = text(R.string.transparency, 15);
+        label.setText(getString(R.string.transparency_value, options.transparency()));
+        parent.addView(label);
+        SeekBar slider = new SeekBar(this);
+        slider.setMax(100);
+        slider.setProgress(options.transparency());
+        slider.setKeyProgressIncrement(5);
+        slider.setContentDescription(getString(R.string.transparency));
+        parent.addView(slider, new LinearLayout.LayoutParams(-1, dp(48)));
+        slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onProgressChanged(SeekBar bar, int value, boolean fromUser) {
+                if (!fromUser) return;
+                options.store.edit().putInt("transparency", value).apply();
+                label.setText(getString(R.string.transparency_value, value));
+                refreshPreview();
+            }
+            public void onStartTrackingTouch(SeekBar bar) { }
+            public void onStopTrackingTouch(SeekBar bar) { }
+        });
+        parent.addView(text(R.string.transparency_hint, 13));
     }
     private interface ToggleAction { void changed(boolean checked); }
     private CheckBox toggle(LinearLayout parent, int title, boolean selected, ToggleAction action) {

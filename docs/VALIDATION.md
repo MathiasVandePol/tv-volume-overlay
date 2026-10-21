@@ -25,9 +25,9 @@ explicitly labelled sample preview that uses the same renderer as the real overl
 
 Local checks completed:
 
-- Ten JVM tests passed, including input suppression, popup immunity, custom-label validation and
+- Eleven JVM tests passed, including input suppression, popup immunity, custom-label validation and
   all number formats (also while muted).
-- Five connected Android tests passed on an isolated emulator with a 1920×1080 TV device profile
+- Six connected Android tests passed on an isolated emulator with a 1920×1080 TV device profile
   and an Android 37.1 Google APIs phone system image. This is an app/UI check, not TV firmware or ARC emulation.
 - Rendered 216 combinations (3 sizes × 2 layouts × 3 themes × 3 number formats × label on/off × mute on/off)
   without a draw failure; checked text visibility and displayed numbers.
@@ -36,6 +36,7 @@ Local checks completed:
 - The real accessibility overlay test uses the settings button, checks its window type/title,
   confirms the five-second selection outlasts one second and the one-second selection disappears,
   and checks that media volume and mute state are unchanged. Original accessibility settings are restored.
+- Transparency is checked at 0%, 50% and 100% in each theme using actual rendered pixels; text/bar remain visible.
 - The settings preview fits its column while the full-screen test retains the chosen actual size.
 - Installed service metadata exposes the setup activity, with capability mask zero, no key filter
   and no screen-content retrieval. The package filter is intentionally removed for activity metadata.
@@ -55,3 +56,9 @@ Pending physical TV checks:
 - Check custom/hidden labels and all three number formats, including mute and held volume keys.
 - Hide the launcher icon; reopen through Accessibility → Settings and restore it. Verify after reboot.
 - Recheck no key filtering, non-touchable/non-focusable overlay windows, and each selected timeout (1/2/3/5 seconds), including the explicitly labelled test overlay.
+
+Android/CEC precision limitation: the user reported a difference between the overlay and AVR display,
+and confirmed that the AVR supports half steps. Local evidence shows integer CEC reports copied into
+Android’s integer media-volume state, but contains no simultaneous front-panel reading to determine
+this particular discrepancy. The user chose to retain Android/CEC without a network integration.
+The settings now clarify this limitation; no guessed calibration/decimal precision is introduced.

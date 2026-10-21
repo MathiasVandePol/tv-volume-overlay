@@ -2,6 +2,7 @@ package be.mathiasvandepol.tvvolume;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -31,12 +32,14 @@ final class VolumePanel extends LinearLayout {
         setPadding(dp(18), dp(14), dp(18), dp(14));
         setFocusable(false);
         int background = options.theme() == OverlayOptions.Theme.LIGHT ? 0xFFF2F4F8
-                : options.theme() == OverlayOptions.Theme.BLACK ? 0xFF000000 : 0xEB1B1D21;
+                : options.theme() == OverlayOptions.Theme.BLACK ? 0xFF000000 : 0xFF1B1D21;
         int ink = options.theme() == OverlayOptions.Theme.LIGHT ? 0xFF172033 : 0xFFF5F7FC;
         GradientDrawable shape = new GradientDrawable();
-        shape.setColor(background);
+        int alpha = OverlayOptions.backgroundAlpha(options.transparency());
+        shape.setColor((background & 0x00FFFFFF) | (alpha << 24));
         shape.setCornerRadius(dp(21));
-        shape.setStroke(dp(1), options.theme() == OverlayOptions.Theme.LIGHT ? 0xFFCCD2DB : 0xFF4B505B);
+        int border = options.theme() == OverlayOptions.Theme.LIGHT ? 0xFFCCD2DB : 0xFF4B505B;
+        shape.setStroke(dp(1), Color.argb(alpha, Color.red(border), Color.green(border), Color.blue(border)));
         setBackground(shape);
         LinearLayout row = new LinearLayout(context);
         row.setOrientation(vertical ? VERTICAL : HORIZONTAL);

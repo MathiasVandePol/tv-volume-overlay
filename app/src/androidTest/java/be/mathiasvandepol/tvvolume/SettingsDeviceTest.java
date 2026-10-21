@@ -69,6 +69,32 @@ public class SettingsDeviceTest {
                         }
         });
     }
+    @Test public void transparencyAffectsBackgroundAndBorderButKeepsTextAndBar() {
+        open(AppearanceActivity.class);
+        instrumentation.runOnMainSync(() -> {
+            OverlayPreferences options = new OverlayPreferences(context);
+            for (OverlayOptions.Theme theme : OverlayOptions.Theme.values()) {
+                for (int transparency : new int[]{0, 50, 100}) {
+                    options.store.edit().putString("theme", theme.name()).putInt("transparency", transparency)
+                            .putBoolean("show_label", true).putString("numbers", "FULL").commit();
+                    VolumePanel panel = new VolumePanel(activity, options);
+                    panel.update(21, 100, false);
+                    panel.measure(View.MeasureSpec.makeMeasureSpec(panel.panelWidth(), View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.AT_MOST));
+                    panel.layout(0, 0, panel.getMeasuredWidth(), panel.getMeasuredHeight());
+                    Bitmap bitmap = Bitmap.createBitmap(panel.getWidth(), panel.getHeight(), Bitmap.Config.ARGB_8888);
+                    panel.draw(new Canvas(bitmap));
+                    assertEquals(OverlayOptions.backgroundAlpha(transparency), android.graphics.Color.alpha(bitmap.getPixel(panel.getWidth() / 2, Math.round(5 * context.getResources().getDisplayMetrics().density))));
+                    // Transparent background must not make the text or meter transparent too.
+                    assertEquals(1f, panel.getAlpha(), 0f);
+                    ViewGroup row = (ViewGroup) panel.getChildAt(0);
+                    assertEquals(255, android.graphics.Color.alpha(((TextView) row.getChildAt(0)).getCurrentTextColor()));
+                    assertEquals(View.VISIBLE, panel.getChildAt(1).getVisibility());
+                    bitmap.recycle();
+                }
+            }
+        });
+    }
     @Test public void samplePreviewFitsItsColumnWhileTestPanelKeepsActualSize() {
         open(AppearanceActivity.class);
         instrumentation.runOnMainSync(() -> {

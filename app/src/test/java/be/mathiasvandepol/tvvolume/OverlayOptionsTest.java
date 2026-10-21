@@ -7,6 +7,14 @@ public class OverlayOptionsTest {
         assertEquals(OverlayOptions.Theme.DARK, OverlayOptions.parse(OverlayOptions.Theme.class, null, OverlayOptions.Theme.DARK));
         assertEquals(OverlayOptions.Layout.VERTICAL, OverlayOptions.parse(OverlayOptions.Layout.class, "VERTICAL", OverlayOptions.Layout.HORIZONTAL));
     }
+    @Test public void transparencyHasCorrectEndpointsAndClampsSavedValues() {
+        assertEquals(255, OverlayOptions.backgroundAlpha(0));
+        assertEquals(128, OverlayOptions.backgroundAlpha(50));
+        assertEquals(0, OverlayOptions.backgroundAlpha(100));
+        assertEquals(255, OverlayOptions.backgroundAlpha(-20));
+        assertEquals(0, OverlayOptions.backgroundAlpha(200));
+        assertEquals(235, OverlayOptions.backgroundAlpha(8));
+    }
     @Test public void labelFallsBackAndBoundsUntrustedInput() {
         assertEquals("Volume", OverlayOptions.label("  ", "Volume"));
         assertEquals("Living room", OverlayOptions.label(" Living room ", "Volume"));

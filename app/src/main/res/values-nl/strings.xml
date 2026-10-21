@@ -40,4 +40,8 @@
     <string name="overlay_test_badge">TEST · VOORBEELD</string>
     <string-array name="sizes"><item>Klein (75%)</item><item>Normaal (100%)</item><item>Groot (125%)</item></string-array>
     <string-array name="durations"><item>1 seconde</item><item>2 seconden (standaard)</item><item>3 seconden</item><item>5 seconden</item></string-array>
+    <string name="transparency">Achtergrondtransparantie</string>
+    <string name="transparency_value">Achtergrondtransparantie: %1$d%%</string>
+    <string name="transparency_hint">0% = ondoorzichtig, 100% = geen achtergrond of rand. Tekst en balk blijven zichtbaar. Pas aan met links/rechts.</string>
+    <string name="numbers_hint">Android/CEC-waarde. Het receiverdisplay kan een andere schaal gebruiken; halve stappen zijn niet beschikbaar.</string>
 </resources>

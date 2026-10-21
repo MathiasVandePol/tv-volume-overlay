@@ -20,6 +20,8 @@ final class OverlayOptions {
         try { return Enum.valueOf(type, value); }
         catch (IllegalArgumentException | NullPointerException e) { return fallback; }
     }
+    static int transparency(int percent) { return Math.max(0, Math.min(100, percent)); }
+    static int backgroundAlpha(int transparency) { return Math.round(255 * (100 - transparency(transparency)) / 100f); }
     static String label(String custom, String fallback) {
         String clean = custom == null ? "" : custom.replaceAll("[\\p{Cntrl}]", " ").trim();
         return clean.isEmpty() ? fallback : clean.substring(0, Math.min(32, clean.length()));
