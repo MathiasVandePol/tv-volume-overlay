@@ -1,21 +1,18 @@
 # TV Volume Overlay
 
-**Available in English and Dutch.** The app automatically follows your TV's language and uses English for other languages.
-
 A small, free volume display for Android TV apps when sound goes to an HDMI ARC/eARC receiver.
 
 Some TVs send volume commands to the receiver but show no volume bar inside Netflix or other
 built-in apps. TV Volume Overlay displays the level Android receives back from the audio system.
 It works with your existing launcher.
 
-> The latest stable release is **1.0.0**. The settings below are being developed for **1.1**;
-> see [validation status](docs/VALIDATION.md) before trying a development build.
+The latest release is **1.1.0**, including appearance settings and automatic hiding on TV input screens.
 
 [**Download the latest APK**](https://github.com/MathiasVandePol/tv-volume-overlay/releases/latest)
 
 ![Live horizontal volume overlay and matching setup buttons on a physical Xiaomi TV](docs/images/tv-volume-overlay.png)
 
-_Screenshots show the 1.1 development build on a physical Xiaomi MiTV-MOEU0 running Android 14._
+_Screenshots show the 1.1 interface on a physical Xiaomi MiTV-MOEU0 running Android 14._
 
 ## Requirements
 
@@ -27,6 +24,8 @@ Tested on Xiaomi **MiTV-MOEU0**, Android 14, with a Denon **AVR-X3400H**.
 Other models are welcome to try it; compatibility depends on the TV firmware and receiver.
 This version does not display volume for optical, Bluetooth, TV speakers or a TV box's ordinary HDMI output.
 
+**Available in English and Dutch.** The app automatically follows your TV's language and uses English for other languages.
+
 ## Install
 
 1. Download the APK from [Releases](https://github.com/MathiasVandePol/tv-volume-overlay/releases/latest) and install it on the TV.
@@ -37,6 +36,14 @@ This version does not display volume for optical, Bluetooth, TV speakers or a TV
 By default the small **Volume** panel appears near the upper-right corner and disappears about two seconds
 after the last volume change by default. Muting displays **Muted**. English and Dutch interfaces are included.
 The number uses Android's reported range, such as `21 / 100`; it is not a dB reading.
+
+### Guided installation with a coding assistant
+
+Copy [the installation prompt](PROMPT.md) into a coding assistant with shell access, such as
+Claude Code, Codex or Gemini CLI. Fill in your TV model and connection details if known.
+The prompt guides you through compatibility checks, debugging, downloading the official APK,
+installation, enabling Accessibility and testing with your remote. It keeps your existing launcher
+and audio settings. You can also follow the manual ADB steps below.
 
 ### Enable USB debugging and connect ADB
 
@@ -89,14 +96,14 @@ See Google’s [developer-options guide](https://developer.android.com/studio/de
 After the TV appears as **device** in `adb devices`, run:
 
 ```sh
-adb install -r TV-Volume-Overlay-v1.0.0.apk
+adb install -r TV-Volume-Overlay-v1.1.0.apk
 ```
 
 If an Android TV 14 installer waits for an on-screen confirmation, accept it on the TV, or push
 the APK and install it through a separate shell call:
 
 ```sh
-adb push TV-Volume-Overlay-v1.0.0.apk /data/local/tmp/tv-volume-overlay.apk
+adb push TV-Volume-Overlay-v1.1.0.apk /data/local/tmp/tv-volume-overlay.apk
 adb shell pm install -r /data/local/tmp/tv-volume-overlay.apk
 adb shell rm /data/local/tmp/tv-volume-overlay.apk
 ```
@@ -108,7 +115,7 @@ again, depending on what you enabled. Use **Revoke USB debugging authorizations*
 paired computer under Wireless debugging if you no longer need that access. The app keeps working
 with debugging disabled.
 
-## Appearance and settings (development version)
+## Appearance and settings
 
 Open **Appearance and settings** in the app. Choices are saved automatically on the TV.
 The small preview uses sample data and fits its column. **Test overlay on screen** displays the
@@ -160,7 +167,7 @@ Only the launcher alias is disabled; the setup activity and service remain enabl
 ## Why Accessibility?
 
 Android permits an enabled accessibility service to host a window above other apps. This service
-uses that window type to show the volume. The development version also observes activity package/class
+uses that window type to show the volume. It also observes activity package/class
 metadata to suppress the overlay on TV input screens. That current package is held only in memory. It cannot read screen content and does not request
 key-event filtering. Volume long-presses remain handled by Android and HDMI-CEC.
 
@@ -212,9 +219,9 @@ receiver reports its volume. Some firmware does not expose those reports to norm
 restrict overlays. Please report the TV, Android version, receiver and affected app. On the tested
 MiTV/Denon setup the panel was confirmed visible during Netflix playback with the real remote.
 
-**Two bars when using an AVR HDMI input:** enable **Hide on TV input screens** in a development build
-and check the detected input-app count. The stable 1.0.0 release has no automatic suppression;
-disable that version temporarily if you prefer the receiver’s own display on those inputs.
+**Two bars when using an AVR HDMI input:** enable **Hide on TV input screens** and check the detected
+input-app count. Automatic suppression depends on the TV firmware; zero detected apps means it is
+unavailable. You can disable the service temporarily when using the receiver’s own display.
 
 **Two bars inside Android apps:** disable another overlay or an integrated overlay in your launcher.
 
