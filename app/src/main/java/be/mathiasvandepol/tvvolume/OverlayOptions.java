@@ -5,6 +5,16 @@ final class OverlayOptions {
     enum Position { TOP_LEFT, TOP_CENTER, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT }
     enum Layout { HORIZONTAL, VERTICAL }
     enum Theme { DARK, LIGHT, BLACK }
+    enum Size {
+        SMALL(0.75f), NORMAL(1f), LARGE(1.25f);
+        final float factor;
+        Size(float factor) { this.factor = factor; }
+    }
+    enum Duration {
+        SHORT(1000), NORMAL(1900), LONG(3000), EXTRA_LONG(5000);
+        final long millis;
+        Duration(long millis) { this.millis = millis; }
+    }
     enum Numbers { FULL, VALUE, HIDDEN }
     static <T extends Enum<T>> T parse(Class<T> type, String value, T fallback) {
         try { return Enum.valueOf(type, value); }

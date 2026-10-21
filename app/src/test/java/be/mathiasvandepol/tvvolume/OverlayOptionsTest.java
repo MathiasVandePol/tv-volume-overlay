@@ -13,6 +13,14 @@ public class OverlayOptionsTest {
         assertEquals("TV  Sound", OverlayOptions.label("TV\n\tSound", "Volume"));
         assertEquals(32, OverlayOptions.label("x".repeat(200), "Volume").length());
     }
+    @Test public void unknownSizeAndDurationKeepExistingAppearanceAndTimeout() {
+        assertEquals(1f, OverlayOptions.parse(OverlayOptions.Size.class, "huge", OverlayOptions.Size.NORMAL).factor, 0f);
+        assertEquals(1900, OverlayOptions.parse(OverlayOptions.Duration.class, null, OverlayOptions.Duration.NORMAL).millis);
+        assertEquals(0.75f, OverlayOptions.Size.SMALL.factor, 0f);
+        assertEquals(1.25f, OverlayOptions.Size.LARGE.factor, 0f);
+        assertEquals(1000, OverlayOptions.Duration.SHORT.millis);
+        assertEquals(5000, OverlayOptions.Duration.EXTRA_LONG.millis);
+    }
     @Test public void numberChoicesAlsoApplyWhenMuted() {
         assertEquals("21 / 100", OverlayOptions.number(OverlayOptions.Numbers.FULL, 21, 100, false));
         assertEquals("21", OverlayOptions.number(OverlayOptions.Numbers.VALUE, 21, 100, false));

@@ -42,11 +42,12 @@ public class SettingsDeviceTest {
         open(AppearanceActivity.class);
         instrumentation.runOnMainSync(() -> {
             OverlayPreferences options = new OverlayPreferences(context);
+            for (OverlayOptions.Size size : OverlayOptions.Size.values())
             for (OverlayOptions.Layout layout : OverlayOptions.Layout.values())
                 for (OverlayOptions.Theme theme : OverlayOptions.Theme.values())
                     for (OverlayOptions.Numbers numbers : OverlayOptions.Numbers.values())
                         for (boolean show : new boolean[]{false, true}) {
-                            options.store.edit().putString("layout", layout.name()).putString("theme", theme.name())
+                            options.store.edit().putString("size", size.name()).putString("layout", layout.name()).putString("theme", theme.name())
                                     .putString("numbers", numbers.name()).putBoolean("show_label", show)
                                     .putString("label", "Living room receiver volume test").commit();
                             VolumePanel panel = new VolumePanel(activity, options);
@@ -66,6 +67,19 @@ public class SettingsDeviceTest {
                                 assertEquals(OverlayOptions.number(numbers, 21, 100, muted), ((TextView) row.getChildAt(1)).getText().toString());
                             }
                         }
+        });
+    }
+    @Test public void samplePreviewFitsItsColumnWhileTestPanelKeepsActualSize() {
+        open(AppearanceActivity.class);
+        instrumentation.runOnMainSync(() -> {
+            OverlayPreferences options = new OverlayPreferences(context);
+            options.store.edit().putString("size", "LARGE").putString("layout", "HORIZONTAL").commit();
+            VolumePanel actual = new VolumePanel(activity, options);
+            VolumePanel sample = new VolumePanel(activity, options, true);
+            assertTrue(actual.panelWidth() > sample.panelWidth());
+            float density = context.getResources().getDisplayMetrics().density;
+            assertEquals(Math.round(325 * density), actual.panelWidth());
+            assertTrue(sample.panelWidth() <= Math.round(270 * density));
         });
     }
     @Test public void hidingLauncherDoesNotDisableSettingsAndCanBeUndoneInUi() {

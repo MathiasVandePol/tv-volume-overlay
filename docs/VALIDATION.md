@@ -20,19 +20,23 @@ Other TV/receiver combinations have not been verified.
 # Version 1.1 development validation
 
 New features: TV-input suppression, position/layout/theme controls, custom/hidden text label,
-full/value-only/hidden numbers, and a reversible hidden launcher alias. Settings include an
+full/value-only/hidden numbers, size/duration controls, a full-screen overlay test, and a reversible hidden launcher alias. Settings include an
 explicitly labelled sample preview that uses the same renderer as the real overlay.
 
 Local checks completed:
 
-- Nine JVM tests passed, including input suppression, popup immunity, custom-label validation and
+- Ten JVM tests passed, including input suppression, popup immunity, custom-label validation and
   all number formats (also while muted).
-- Three connected Android tests passed on an isolated emulator with a 1920×1080 TV device profile
+- Five connected Android tests passed on an isolated emulator with a 1920×1080 TV device profile
   and an Android 37.1 Google APIs phone system image. This is an app/UI check, not TV firmware or ARC emulation.
-- Rendered 72 combinations (2 layouts × 3 themes × 3 number formats × label on/off × mute on/off)
+- Rendered 216 combinations (3 sizes × 2 layouts × 3 themes × 3 number formats × label on/off × mute on/off)
   without a draw failure; checked text visibility and displayed numbers.
 - Disabling the launcher alias removes the leanback launcher resolver; explicit setup still opens,
   and its settings checkbox restores the launcher entry.
+- The real accessibility overlay test uses the settings button, checks its window type/title,
+  confirms the five-second selection outlasts one second and the one-second selection disappears,
+  and checks that media volume and mute state are unchanged. Original accessibility settings are restored.
+- The settings preview fits its column while the full-screen test retains the chosen actual size.
 - Installed service metadata exposes the setup activity, with capability mask zero, no key filter
   and no screen-content retrieval. The package filter is intentionally removed for activity metadata.
 - Release unit tests, lint (zero errors; existing target-SDK warning only), signed release build and
@@ -50,4 +54,4 @@ Pending physical TV checks:
 - Check all six screen positions, horizontal/vertical layouts and themes with the TV remote.
 - Check custom/hidden labels and all three number formats, including mute and held volume keys.
 - Hide the launcher icon; reopen through Accessibility → Settings and restore it. Verify after reboot.
-- Recheck no key filtering, non-touchable/non-focusable overlay windows, and the ~1.9s timeout.
+- Recheck no key filtering, non-touchable/non-focusable overlay windows, and each selected timeout (1/2/3/5 seconds), including the explicitly labelled test overlay.

@@ -63,6 +63,19 @@ public final class AppearanceActivity extends Activity {
         sample.addView(mute, new LinearLayout.LayoutParams(-1, dp(48)));
         choice(controls, R.string.position, R.array.positions, "position", OverlayOptions.Position.values(), options.position());
         choice(controls, R.string.layout, R.array.layouts, "layout", OverlayOptions.Layout.values(), options.layout());
+        choice(controls, R.string.size, R.array.sizes, "size", OverlayOptions.Size.values(), options.size());
+        choice(controls, R.string.duration, R.array.durations, "duration", OverlayOptions.Duration.values(), options.duration());
+        Button test = new Button(this);
+        test.setText(R.string.test_overlay);
+        test.setAllCaps(false);
+        test.setOnClickListener(view -> {
+            // Hide the keyboard before testing the actual screen position.
+            android.view.inputmethod.InputMethodManager keyboard = getSystemService(android.view.inputmethod.InputMethodManager.class);
+            if (keyboard != null) keyboard.hideSoftInputFromWindow(test.getWindowToken(), 0);
+            OverlayTest.show(this);
+        });
+        controls.addView(test, new LinearLayout.LayoutParams(-1, dp(48)));
+        controls.addView(text(R.string.test_hint, 13));
         choice(controls, R.string.theme, R.array.themes, "theme", OverlayOptions.Theme.values(), options.theme());
         toggle(controls, R.string.show_label, options.showLabel(), checked -> save("show_label", checked));
         controls.addView(text(R.string.custom_label, 15));
@@ -144,7 +157,7 @@ public final class AppearanceActivity extends Activity {
     private void refreshPreview() {
         if (preview == null) return;
         preview.removeAllViews();
-        VolumePanel panel = new VolumePanel(this, options);
+        VolumePanel panel = new VolumePanel(this, options, true);
         panel.update(21, 100, sampleMuted);
         String position = options.position().name();
         int side = position.endsWith("LEFT") ? Gravity.START : position.endsWith("RIGHT") ? Gravity.END : Gravity.CENTER_HORIZONTAL;

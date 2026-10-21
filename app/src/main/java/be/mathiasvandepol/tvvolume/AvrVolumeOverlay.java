@@ -23,7 +23,6 @@ final class AvrVolumeOverlay {
     private static final String VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION";
     private static final String MUTE_CHANGED = "android.media.STREAM_MUTE_CHANGED_ACTION";
     private static final String STREAM = "android.media.EXTRA_VOLUME_STREAM_TYPE";
-    private static final long VISIBLE_MS = 1900;
     private final AccessibilityService service;
     private final AudioManager audio;
     private final WindowManager windows;
@@ -37,12 +36,17 @@ final class AvrVolumeOverlay {
         hide();
         panel = null;
     };
+    private boolean samplePanel;
     private boolean attached;
     private boolean registered;
     private boolean closed;
     private final Runnable hide = this::hide;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
+            if (OverlayTest.ACTION.equals(intent.getAction())) {
+                setResultCode(showPanel(21, 100, false, true) ? android.app.Activity.RESULT_OK : android.app.Activity.RESULT_CANCELED);
+                return;
+            }
             if (intent.getIntExtra(STREAM, -1) != AudioManager.STREAM_MUSIC) return;
             // Read trusted AudioManager state instead of trusting broadcast extras as a volume value.
             showCurrent();
@@ -61,7 +65,8 @@ final class AvrVolumeOverlay {
         if (registered) return;
         IntentFilter filter = new IntentFilter(VOLUME_CHANGED);
         filter.addAction(MUTE_CHANGED);
-        // Both broadcasts come from system_server. Other apps cannot drive this overlay.
+        filter.addAction(OverlayTest.ACTION);
+        // System volume notifications and an explicit same-UID test request only.
         service.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
         registered = true;
         options.store.registerOnSharedPreferenceChangeListener(preferenceListener);
@@ -86,8 +91,22 @@ final class AvrVolumeOverlay {
                 hide();
                 return;
             }
-            boolean muted = audio.isStreamMute(AudioManager.STREAM_MUSIC);
-            if (panel == null) panel = new VolumePanel(service, options);
+            showPanel(value, maximum, audio.isStreamMute(AudioManager.STREAM_MUSIC), false);
+        } catch (RuntimeException error) {
+            Log.w(TAG, "Unable to read AVR state", error);
+            hide();
+        }
+    }
+
+    private boolean showPanel(int value, int maximum, boolean muted, boolean sample) {
+        if (closed || windows == null) return false;
+        try {
+            if (panel == null || samplePanel != sample) {
+                hide();
+                panel = new VolumePanel(service, options);
+                samplePanel = sample;
+                if (sample) panel.markAsTest();
+            }
             panel.update(value, maximum, muted);
             if (!attached) {
                 WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -98,17 +117,18 @@ final class AvrVolumeOverlay {
                                 | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                         PixelFormat.TRANSLUCENT);
                 position(params);
-                params.setTitle("Volume");
+                params.setTitle(sample ? "Volume test" : "Volume");
                 windows.addView(panel, params);
                 attached = true;
             }
             handler.removeCallbacks(hide);
-            handler.postDelayed(hide, VISIBLE_MS);
-            Log.d(TAG, "shown volume=" + value + " max=" + maximum + " muted=" + muted);
+            handler.postDelayed(hide, options.duration().millis);
+            return true;
         } catch (RuntimeException error) {
-            // An overlay is optional feedback: a routing/window error must not kill Home or audio.
-            Log.w(TAG, "Unable to show AVR feedback", error);
+            // Feedback must never interrupt audio or the foreground app.
+            Log.w(TAG, "Unable to show volume feedback", error);
             hide();
+            return false;
         }
     }
 

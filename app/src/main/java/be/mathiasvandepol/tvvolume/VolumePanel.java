@@ -16,12 +16,16 @@ final class VolumePanel extends LinearLayout {
     private final TextView value;
     private final Meter meter;
     private final OverlayPreferences options;
+    private final float scale;
     final boolean vertical;
     public VolumePanel(Context context) { this(context, new OverlayPreferences(context)); }
-    VolumePanel(Context context, OverlayPreferences options) {
+    VolumePanel(Context context, OverlayPreferences options) { this(context, options, false); }
+    VolumePanel(Context context, OverlayPreferences options, boolean fitPreview) {
         super(context);
         this.options = options;
         vertical = options.layout() == OverlayOptions.Layout.VERTICAL;
+        // The small settings preview fits its column. The test overlay uses the true size.
+        scale = fitPreview ? Math.min(options.size().factor, 270f / (vertical ? 132 : 260)) : options.size().factor;
         setOrientation(VERTICAL);
         setGravity(Gravity.CENTER_HORIZONTAL);
         setPadding(dp(18), dp(14), dp(18), dp(14));
@@ -68,15 +72,23 @@ final class VolumePanel extends LinearLayout {
         meter.muted = muted;
         meter.invalidate();
     }
+    void markAsTest() {
+        TextView badge = text(12, options.theme() == OverlayOptions.Theme.LIGHT ? 0xFF172033 : 0xFFF5F7FC);
+        badge.setText(R.string.overlay_test_badge);
+        badge.setGravity(Gravity.CENTER);
+        LayoutParams params = new LayoutParams(-1, -2);
+        params.bottomMargin = dp(8);
+        addView(badge, 0, params);
+    }
     int panelWidth() { return dp(vertical ? 132 : 260); }
     private TextView text(int size, int color) {
         TextView result = new TextView(getContext());
-        result.setTextSize(size);
+        result.setTextSize(size * scale);
         result.setTextColor(color);
         result.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         return result;
     }
-    private int dp(int n) { return Math.round(n * getResources().getDisplayMetrics().density); }
+    private int dp(int n) { return Math.round(n * scale * getResources().getDisplayMetrics().density); }
     private static final class Meter extends View {
         final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         final boolean vertical;

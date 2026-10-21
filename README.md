@@ -31,7 +31,7 @@ This version does not display volume for optical, Bluetooth, TV speakers or a TV
 4. Use your TV remote's volume buttons, including while watching a video.
 
 By default the small **Volume** panel appears near the upper-right corner and disappears about two seconds
-after the last volume change. Muting displays **Muted**. English and Dutch interfaces are included.
+after the last volume change by default. Muting displays **Muted**. English and Dutch interfaces are included.
 The number uses Android's reported range, such as `21 / 100`; it is not a dB reading.
 
 To sideload with ADB, after connecting your TV:
@@ -56,12 +56,18 @@ After sideloading, switch network/USB debugging off again; the app does not need
 ## Appearance and settings (development version)
 
 Open **Appearance and settings** in the app. Choices are saved automatically on the TV.
-The preview uses sample data and never changes the receiver volume.
+The small preview uses sample data and fits its column. **Test overlay on screen** displays the
+actual overlay at your chosen size and position, with a **TEST · SAMPLE** badge and sample level
+21 / 100 for the selected duration. The service must be enabled, but no receiver/ARC connection is
+needed for this deliberate test. It never changes volume or mute state. Normal volume feedback
+still requires the active ARC/eARC route. The badge remains visible even if you hide all other text.
 
 ![Development settings with sample preview, captured on an emulator](docs/images/settings-preview.png)
 
 - Six positions: top/bottom, left/center/right.
 - Horizontal or vertical bar; dark, light or black theme.
+- Small (75%), normal (100%) or large (125%) size, scaling the text and bar together.
+- Display duration of 1, 2 (default, about 1.9), 3 or 5 seconds.
 - Custom text label (up to 32 characters), or hide the label entirely. Blank custom text restores **Volume**.
 - Number format: **21 / 100**, **21**, or **Hidden**. Hiding both text and numbers leaves just the bar.
 - Muting replaces a visible label with **Muted**, replaces a visible number with a dash and colors the bar red.
@@ -108,7 +114,7 @@ The app:
 - Does not change volume, intercept remote keys or request audio focus.
 - Reacts to Android volume/mute notifications; it does not poll the receiver or network.
 - Checks the active media route before showing a panel; merely having an HDMI cable connected is not enough.
-- Removes the panel after about 1.9 seconds, and when its service stops.
+- Removes the panel after the selected duration (about 1.9 seconds by default), and when its service stops.
 
 ## Turn it off
 

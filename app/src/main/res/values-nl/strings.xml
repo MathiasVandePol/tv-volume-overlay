@@ -32,4 +32,12 @@
     <string-array name="layouts"><item>Horizontaal</item><item>Verticaal</item></string-array>
     <string-array name="themes"><item>Donker</item><item>Licht</item><item>Zwart</item></string-array>
     <string-array name="number_formats"><item>Waarde en maximum (21 / 100)</item><item>Alleen waarde (21)</item><item>Verborgen</item></string-array>
+    <string name="size">Grootte van de overlay</string>
+    <string name="duration">Weergaveduur</string>
+    <string name="test_overlay">Overlay op het scherm testen</string>
+    <string name="test_hint">Toont een herkenbaar voorbeeld op de echte grootte en positie, voor de gekozen duur. Vereist de service. Geen receiver of volumewijziging nodig. Het kleine voorbeeld past zich aan de kolom aan.</string>
+    <string name="test_unavailable">Schakel TV Volume Overlay in bij Toegankelijkheid en probeer opnieuw.</string>
+    <string name="overlay_test_badge">TEST · VOORBEELD</string>
+    <string-array name="sizes"><item>Klein (75%)</item><item>Normaal (100%)</item><item>Groot (125%)</item></string-array>
+    <string-array name="durations"><item>1 seconde</item><item>2 seconden (standaard)</item><item>3 seconden</item><item>5 seconden</item></string-array>
 </resources>
