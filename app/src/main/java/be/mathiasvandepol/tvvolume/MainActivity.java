@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 public final class MainActivity extends Activity {
     private TextView status;
+    private final AccessibilityManager.AccessibilityServicesStateChangeListener serviceListener = this::updateStatus;
     private int dp(int n) { return Math.round(n * getResources().getDisplayMetrics().density); }
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -44,19 +45,7 @@ public final class MainActivity extends Activity {
         requirementsParams.topMargin = dp(14);
         root.addView(text(R.string.requirements, 14, 0xFFB1BDD0), requirementsParams);
         root.addView(text(R.string.privacy, 13, 0xFF8D9BB0));
-        Button settings = new Button(this);
-        settings.setText(R.string.open_settings);
-        settings.setAllCaps(false);
-        settings.setTextSize(16);
-        settings.setPadding(dp(24), 0, dp(24), 0);
-        settings.setMinHeight(dp(48));
-        settings.setOnFocusChangeListener((view, focused) -> {
-            GradientDrawable bg = new GradientDrawable();
-            bg.setCornerRadius(dp(15));
-            bg.setColor(focused ? 0xFFD6E5FF : 0xFF223048);
-            settings.setTextColor(focused ? 0xFF111C2C : Color.WHITE);
-            settings.setBackground(bg);
-        });
+        Button settings = actionButton(R.string.open_settings);
         settings.setOnClickListener(view -> {
             try { startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)); }
             catch (ActivityNotFoundException e) { Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_LONG).show(); }
@@ -64,16 +53,35 @@ public final class MainActivity extends Activity {
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(-2, dp(48));
         buttonParams.topMargin = dp(20);
         root.addView(settings, buttonParams);
-        Button customize = new Button(this);
-        customize.setText(R.string.customize);
-        customize.setAllCaps(false);
+        Button customize = actionButton(R.string.customize);
         customize.setOnClickListener(view -> startActivity(new Intent(this, AppearanceActivity.class)));
-        root.addView(customize, new LinearLayout.LayoutParams(-2, dp(48)));
+        LinearLayout.LayoutParams customizeParams = new LinearLayout.LayoutParams(-2, dp(48));
+        customizeParams.topMargin = dp(8);
+        root.addView(customize, customizeParams);
         android.widget.ScrollView scroll = new android.widget.ScrollView(this);
         scroll.setFillViewport(true);
         scroll.addView(root);
         setContentView(scroll);
         settings.requestFocus();
+    }
+    private Button actionButton(int label) {
+        Button button = new Button(this);
+        button.setText(label);
+        button.setAllCaps(false);
+        button.setTextSize(16);
+        button.setPadding(dp(24), 0, dp(24), 0);
+        button.setMinHeight(dp(48));
+        button.setMinWidth(dp(280));
+        button.setOnFocusChangeListener((view, focused) -> styleButton(button, focused));
+        styleButton(button, false);
+        return button;
+    }
+    private void styleButton(Button button, boolean focused) {
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(dp(15));
+        background.setColor(focused ? 0xFFD6E5FF : 0xFF223048);
+        button.setTextColor(focused ? 0xFF111C2C : Color.WHITE);
+        button.setBackground(background);
     }
     private TextView text(int resource, int sp, int color) {
         TextView view = new TextView(this);
@@ -82,9 +90,21 @@ public final class MainActivity extends Activity {
         view.setTextColor(color);
         return view;
     }
+    @Override protected void onStart() {
+        super.onStart();
+        AccessibilityManager manager = getSystemService(AccessibilityManager.class);
+        if (manager != null) manager.addAccessibilityServicesStateChangeListener(getMainExecutor(), serviceListener);
+    }
+    @Override protected void onStop() {
+        AccessibilityManager manager = getSystemService(AccessibilityManager.class);
+        if (manager != null) manager.removeAccessibilityServicesStateChangeListener(serviceListener);
+        super.onStop();
+    }
     @Override protected void onResume() {
         super.onResume();
-        AccessibilityManager manager = getSystemService(AccessibilityManager.class);
+        updateStatus(getSystemService(AccessibilityManager.class));
+    }
+    private void updateStatus(AccessibilityManager manager) {
         boolean enabled = false;
         if (manager != null) {
             for (AccessibilityServiceInfo info : manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {

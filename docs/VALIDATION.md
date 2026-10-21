@@ -43,19 +43,31 @@ Local checks completed:
 - Release unit tests, lint (zero errors; existing target-SDK warning only), signed release build and
   debug build passed. D-pad selection of vertical layout and the actual settings preview were inspected.
 
-The TV was switched off during implementation. No new HDMI-CEC, HDMI-input switching, Netflix,
-held-key, reboot persistence, or physical launcher behavior has been verified for this version.
-The physical-device evidence above applies to **1.0.0 only**. Do not treat the development version
-as a stable release until those device checks pass.
+Physical TV checks completed on 21 October 2026:
 
-Pending physical TV checks:
+- Installed the signed 1.1.0-dev candidate over 1.0.0 on the Xiaomi/Denon setup. The accessibility
+  service remains bound with capability mask zero, alongside the existing launcher helper.
+- The actual sample window appears and disappears at the default timeout. Actual reported volume
+  was also observed in the app-owned accessibility overlay above its own setup/settings screens.
+- Discovered the TV-input viewer. During four checks on the AVR HDMI input, Android received
+  volume updates while no app overlay window appeared. This is evidence for suppression on this TV.
+- The user confirmed that position, orientation, theme, transparency, text/number settings, preview
+  and the test button work with the real remote.
+- The user confirmed visibility during Netflix video playback, mute, held volume and automatic dismissal.
+- Matched both setup buttons, reduced vertical side padding from 18dp to 8dp, and made vertical
+  width depend on visible text/number choices (104dp full scale, 80dp label/value only, 48dp bar only,
+  before the chosen size factor). The latest UI was visually checked on the TV.
+- Fixed the setup status staying stale after an APK update: it now follows accessibility-service
+  state changes. The existing connected window test now also covers service binding while setup stays open.
+- Re-ran all 11 JVM and 6 isolated emulator tests, release lint and signed release build after the UI changes.
+- Both README screenshots are fresh, unedited captures of this version on the physical TV.
 
-- Discover the TV input viewer, hide on AVR HDMI input, restore in Home/Netflix, and check the
-  suppression toggle. Popups and the overlay itself must not clear the detected input screen.
-- Check all six screen positions, horizontal/vertical layouts and themes with the TV remote.
-- Check custom/hidden labels and all three number formats, including mute and held volume keys.
-- Hide the launcher icon; reopen through Accessibility → Settings and restore it. Verify after reboot.
-- Recheck no key filtering, non-touchable/non-focusable overlay windows, and each selected timeout (1/2/3/5 seconds), including the explicitly labelled test overlay.
+Remaining device checks before a stable release:
+
+- Hide the launcher icon, reopen through this TV’s Accessibility settings and restore it; verify after reboot.
+- Check preferences/service behavior after reboot and repeated input/route changes.
+- A controlled on/off comparison for the reported audible volume-control latency has not been completed.
+  The settings/Netflix confirmations above do not establish that this latency issue is fixed.
 
 Android/CEC precision limitation: the user reported a difference between the overlay and AVR display,
 and confirmed that the AVR supports half steps. Local evidence shows integer CEC reports copied into

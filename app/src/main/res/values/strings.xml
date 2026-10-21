@@ -45,4 +45,5 @@
     <string name="transparency_value">Background transparency: %1$d%%</string>
     <string name="transparency_hint">0% = opaque, 100% = no background or border. Text and bar stay visible. Use left/right to adjust.</string>
     <string name="numbers_hint">Android/CEC level. The receiver’s display may use another scale; half steps are unavailable.</string>
+    <string name="overlay_test_badge_short" translatable="false">TEST</string>
 </resources>

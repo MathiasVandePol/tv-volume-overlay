@@ -38,10 +38,19 @@ public class OverlayWindowDeviceTest {
         Activity activity = null;
         automation.adoptShellPermissionIdentity(Manifest.permission.WRITE_SECURE_SETTINGS);
         try {
+            activity = instrumentation.startActivitySync(new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            instrumentation.waitForIdleSync();
+            final Activity setup = activity;
             String component = context.getPackageName() + "/" + VolumeOverlayService.class.getName();
             Settings.Secure.putString(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
                     originalServices == null || originalServices.isEmpty() ? component : originalServices + ":" + component);
             Settings.Secure.putInt(context.getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, 1);
+            assertTrue("Setup status must update when the service binds without reopening the screen", await(() -> {
+                java.util.concurrent.atomic.AtomicBoolean visible = new java.util.concurrent.atomic.AtomicBoolean();
+                instrumentation.runOnMainSync(() -> visible.set(findText(setup.getWindow().getDecorView(), context.getString(R.string.status_on)) != null));
+                return visible.get();
+            }, 8000));
+            instrumentation.runOnMainSync(setup::finish);
             options.store.edit().putString("duration", "EXTRA_LONG").putString("size", "LARGE")
                     .putBoolean("show_label", false).putString("numbers", "HIDDEN").commit();
             activity = instrumentation.startActivitySync(new Intent(context, AppearanceActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

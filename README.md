@@ -11,7 +11,9 @@ It works with your existing launcher.
 
 [**Download the latest APK**](https://github.com/MathiasVandePol/tv-volume-overlay/releases/latest)
 
-![TV Volume Overlay on an actual Android TV](docs/images/tv-volume-overlay.png)
+![Live horizontal volume overlay and matching setup buttons on a physical Xiaomi TV](docs/images/tv-volume-overlay.png)
+
+_Screenshots show the 1.1 development build on a physical Xiaomi MiTV-MOEU0 running Android 14._
 
 ## Requirements
 
@@ -113,10 +115,10 @@ actual overlay at your chosen size and position, with a **TEST · SAMPLE** badge
 needed for this deliberate test. It never changes volume or mute state. Normal volume feedback
 still requires the active ARC/eARC route. The badge remains visible even if you hide all other text.
 
-![Development settings with sample preview, captured on an emulator](docs/images/settings-preview.png)
+![Settings, transparency control and slim vertical preview on the physical Xiaomi TV](docs/images/settings-preview.png)
 
 - Six positions: top/bottom, left/center/right.
-- Horizontal or vertical bar; dark, light or black theme.
+- Horizontal or slim vertical bar; dark, light or black theme. The vertical panel narrows further when text/numbers are hidden.
 - Small (75%), normal (100%) or large (125%) size, scaling the text and bar together.
 - Background transparency from 0% (opaque) to 100% (no background/border). Text and bar remain visible. Default: 8%.
 - Display duration of 1, 2 (default, about 1.9), 3 or 5 seconds.
@@ -131,7 +133,7 @@ uses activity package/class metadata to recognize those screens. It does not ide
 HDMI socket or read screen content. Live TV in the same input-viewer app can also be suppressed.
 The settings page shows how many input apps were detected; zero means automatic hiding is unavailable
 on that firmware. You can disable suppression if it hides a screen where you want the overlay.
-TV firmware can affect discovery and foreground events; this new behavior still needs a physical TV test.
+Input suppression has been checked on the Xiaomi/Denon setup above. Other TV firmware can affect discovery and foreground events.
 
 ### Reopen after hiding the icon
 
