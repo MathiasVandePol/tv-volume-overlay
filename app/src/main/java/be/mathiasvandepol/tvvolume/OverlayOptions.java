@@ -1,0 +1,35 @@
+package be.mathiasvandepol.tvvolume;
+
+/** Persisted choices are parsed defensively so upgrades never break the service. */
+final class OverlayOptions {
+    enum Position { TOP_LEFT, TOP_CENTER, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT }
+    enum Layout { HORIZONTAL, VERTICAL }
+    enum Theme { DARK, LIGHT, BLACK }
+    enum Size {
+        SMALL(0.75f), NORMAL(1f), LARGE(1.25f);
+        final float factor;
+        Size(float factor) { this.factor = factor; }
+    }
+    enum Duration {
+        SHORT(1000), NORMAL(1900), LONG(3000), EXTRA_LONG(5000);
+        final long millis;
+        Duration(long millis) { this.millis = millis; }
+    }
+    enum Numbers { FULL, VALUE, HIDDEN }
+    static <T extends Enum<T>> T parse(Class<T> type, String value, T fallback) {
+        try { return Enum.valueOf(type, value); }
+        catch (IllegalArgumentException | NullPointerException e) { return fallback; }
+    }
+    static int transparency(int percent) { return Math.max(0, Math.min(100, percent)); }
+    static int backgroundAlpha(int transparency) { return Math.round(255 * (100 - transparency(transparency)) / 100f); }
+    static String label(String custom, String fallback) {
+        String clean = custom == null ? "" : custom.replaceAll("[\\p{Cntrl}]", " ").trim();
+        return clean.isEmpty() ? fallback : clean.substring(0, Math.min(32, clean.length()));
+    }
+    static String number(Numbers mode, int value, int maximum, boolean muted) {
+        if (mode == Numbers.HIDDEN) return "";
+        if (muted) return "—";
+        return mode == Numbers.VALUE ? Integer.toString(value) : value + " / " + maximum;
+    }
+    private OverlayOptions() { }
+}

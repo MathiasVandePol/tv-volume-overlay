@@ -9,7 +9,41 @@
     <string name="privacy">No Internet access. No screen reading. No key interception.</string>
     <string name="open_settings">Open Accessibility settings</string>
     <string name="settings_unavailable">Open Accessibility in your TV settings.</string>
-    <string name="service_description">Displays the reported receiver volume above your TV apps. This service only hosts the display window: it does not read screen content, filter remote keys or change the volume. Disable it here to stop the overlay.</string>
+    <string name="service_description">Displays receiver volume above TV apps. Uses only activity package/class metadata to hide on TV input screens. Never reads screen content, filters remote keys or changes volume. Disable this service to stop the overlay.</string>
     <string name="avr_volume_title">Volume</string>
     <string name="avr_volume_muted">Muted</string>
+    <string name="customize">Appearance and settings</string>
+    <string name="preview_title">Preview</string>
+    <string name="preview_hint">Sample level 21 / 100. No audio is changed.</string>
+    <string name="preview_mute">Preview mute / unmute</string>
+    <string name="position">Screen position</string>
+    <string name="layout">Bar layout</string>
+    <string name="theme">Theme</string>
+    <string name="show_label">Show text label</string>
+    <string name="custom_label">Custom text (max. 32 characters)</string>
+    <string name="label_hint">Leave blank for Volume. Muted replaces the label while muted.</string>
+    <string name="numbers">Volume number</string>
+    <string name="hide_inputs">Hide on TV input screens</string>
+    <string name="inputs_hint">Avoids a second bar over the receiver’s own display. May also hide on live TV in the same input app. Detection depends on TV firmware.</string>
+    <string name="inputs_found">Detected TV input apps: %1$d</string>
+    <string name="hide_icon">Hide app icon from launcher</string>
+    <string name="hide_icon_hint">The service keeps working. Reopen through TV Settings → Accessibility → TV Volume Overlay → Settings, then turn this option off. Some TVs do not provide this Settings button; in that case use ADB to open the app (see README). Your launcher may cache the icon briefly.</string>
+    <string name="launcher_failed">Unable to update the launcher icon.</string>
+    <string-array name="positions"><item>Top left</item><item>Top center</item><item>Top right</item><item>Bottom left</item><item>Bottom center</item><item>Bottom right</item></string-array>
+    <string-array name="layouts"><item>Horizontal</item><item>Vertical</item></string-array>
+    <string-array name="themes"><item>Dark</item><item>Light</item><item>Black</item></string-array>
+    <string-array name="number_formats"><item>Value and maximum (21 / 100)</item><item>Value only (21)</item><item>Hidden</item></string-array>
+    <string name="size">Overlay size</string>
+    <string name="duration">Display duration</string>
+    <string name="test_overlay">Test overlay on screen</string>
+    <string name="test_hint">Shows a labelled sample at its actual size and position for the selected duration. Requires the service. No receiver or audio changes needed. The small preview fits its column.</string>
+    <string name="test_unavailable">Enable TV Volume Overlay in Accessibility and try again.</string>
+    <string name="overlay_test_badge">TEST · SAMPLE</string>
+    <string-array name="sizes"><item>Small (75%)</item><item>Normal (100%)</item><item>Large (125%)</item></string-array>
+    <string-array name="durations"><item>1 second</item><item>2 seconds (default)</item><item>3 seconds</item><item>5 seconds</item></string-array>
+    <string name="transparency">Background transparency</string>
+    <string name="transparency_value">Background transparency: %1$d%%</string>
+    <string name="transparency_hint">0% = opaque, 100% = no background or border. Text and bar stay visible. Use left/right to adjust.</string>
+    <string name="numbers_hint">Android/CEC level. The receiver’s display may use another scale; half steps are unavailable.</string>
+    <string name="overlay_test_badge_short" translatable="false">TEST</string>
 </resources>
