@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name" translatable="false">TV Volume Overlay</string>
+    <string name="title">See your volume.</string>
+    <string name="subtitle">A small volume display for your TV apps.</string>
+    <string name="status_on">Service enabled</string>
+    <string name="status_off">Service disabled</string>
+    <string name="instructions">1. Open Accessibility settings.\n2. Enable TV Volume Overlay.\n3. Adjust the volume with your TV remote.</string>
+    <string name="requirements">Android 13+ · HDMI ARC / eARC\nYour receiver must report its volume through HDMI-CEC.</string>
+    <string name="privacy">No Internet access. No screen reading. No key interception.</string>
+    <string name="open_settings">Open Accessibility settings</string>
+    <string name="settings_unavailable">Open Accessibility in your TV settings.</string>
+    <string name="service_description">Displays the reported receiver volume above your TV apps. This service only hosts the display window: it does not read screen content, filter remote keys or change the volume. Disable it here to stop the overlay.</string>
+    <string name="avr_volume_title">Volume</string>
+    <string name="avr_volume_muted">Muted</string>
+</resources>

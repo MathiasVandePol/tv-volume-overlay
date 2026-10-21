@@ -1,0 +1,14 @@
+<resources>
+    <string name="title">Je volume in beeld.</string>
+    <string name="subtitle">Een kleine volumebalk boven je tv-apps.</string>
+    <string name="status_on">Service ingeschakeld</string>
+    <string name="status_off">Service uitgeschakeld</string>
+    <string name="instructions">1. Open de toegankelijkheidsinstellingen.\n2. Schakel TV Volume Overlay in.\n3. Regel het volume met je tv-afstandsbediening.</string>
+    <string name="requirements">Android 13+ · HDMI ARC / eARC\nJe receiver moet zijn volume via HDMI-CEC terugmelden.</string>
+    <string name="privacy">Geen internettoegang. Leest geen scherminhoud. Onderschept geen toetsen.</string>
+    <string name="open_settings">Toegankelijkheid openen</string>
+    <string name="settings_unavailable">Open Toegankelijkheid in de instellingen van je tv.</string>
+    <string name="service_description">Toont het teruggemelde receivervolume boven je tv-apps. Deze service tekent alleen de volumebalk: ze leest geen scherminhoud, onderschept geen afstandsbedieningstoetsen en verandert het volume niet. Schakel de service hier uit om de balk te stoppen.</string>
+    <string name="avr_volume_muted">Gedempt</string>
+    <string name="avr_volume_title">Volume</string>
+</resources>
