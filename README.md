@@ -34,7 +34,55 @@ By default the small **Volume** panel appears near the upper-right corner and di
 after the last volume change by default. Muting displays **Muted**. English and Dutch interfaces are included.
 The number uses Android's reported range, such as `21 / 100`; it is not a dB reading.
 
-To sideload with ADB, after connecting your TV:
+### Enable USB debugging and connect ADB
+
+Debugging is needed only if you install using ADB; the overlay itself does not require it.
+Install [Android SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools)
+on your computer to get the `adb` command.
+
+1. Open the TV’s **Settings → System → About**, or **Settings → Device Preferences → About**.
+2. Select **Android TV OS build** / **Build** seven times with the remote until the TV says
+   **You are now a developer**. Enter your TV PIN if prompted.
+3. Go back to **System** / **Device Preferences**, open **Developer options**, and enable
+   **USB debugging** (sometimes called **ADB debugging**). Menu names vary by manufacturer.
+4. Connect using one of the methods below. When the TV asks **Allow USB debugging?**, accept the
+   computer’s RSA authorization prompt. Select **Always allow from this computer** only for your own computer.
+5. Run `adb devices`. The TV should appear with status **device**. If it says **unauthorized**,
+   accept the prompt on the TV; if necessary, reconnect to show it again.
+
+**Over the local network:** keep the computer and TV on the same local network. If the TV offers
+**Network debugging** / **ADB over network**, enable it and use the address/port it shows. Some TV
+firmware exposes network ADB when USB debugging is enabled; port `5555` is common but not universal.
+Find the TV’s address under **Settings → Network → connected network → IP address**, or **About → Status**.
+Replace `TV_IP` below with that address and use the TV’s port:
+
+```sh
+adb connect TV_IP:5555
+adb devices
+```
+
+If the TV instead offers **Wireless debugging → Pair device with pairing code**, use:
+
+```sh
+adb pair TV_IP:PAIRING_PORT
+adb connect TV_IP:ADB_PORT
+adb devices
+```
+
+Enter the pairing code shown on the TV when asked. The pairing port comes from the pairing dialog;
+the connection port comes from the main Wireless debugging screen and can be different. If a
+connection is refused, confirm that the matching debugging option is enabled and use its displayed port.
+
+**Over USB:** use this only if your TV supports an ADB/device USB connection, with a supported data
+cable and port. Many TV USB ports are for accessories/storage and cannot connect to a computer for ADB.
+After connecting, accept the TV’s authorization prompt and run `adb devices`.
+
+See Google’s [developer-options guide](https://developer.android.com/studio/debug/dev-options) and
+[ADB connection guide](https://developer.android.com/tools/adb) for the general setup.
+
+### Install the APK with ADB
+
+After the TV appears as **device** in `adb devices`, run:
 
 ```sh
 adb install -r TV-Volume-Overlay-v1.0.0.apk
@@ -51,7 +99,10 @@ adb shell rm /data/local/tmp/tv-volume-overlay.apk
 
 If Android blocks enabling a sideloaded accessibility service, look in the app's information page
 for **Allow restricted settings**. Availability and wording differ between TV firmware versions.
-After sideloading, switch network/USB debugging off again; the app does not need ADB to keep working.
+After sideloading, turn **USB debugging**, **Network debugging** and/or **Wireless debugging** off
+again, depending on what you enabled. Use **Revoke USB debugging authorizations** and remove the
+paired computer under Wireless debugging if you no longer need that access. The app keeps working
+with debugging disabled.
 
 ## Appearance and settings (development version)
 
