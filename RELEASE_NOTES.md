@@ -1,14 +1,11 @@
-Standalone volume feedback for Android TV / Google TV with HDMI ARC or eARC audio.
+Development candidate for 1.1 — physical TV validation pending.
 
-- Small **Volume** panel above apps, with the level reported by Android and a mute indicator.
-- Automatically disappears after about two seconds.
-- English and Dutch setup screen with a shortcut to Accessibility settings.
-- No Internet permission, screen-content access, key filtering or audio changes.
-- Android 13+; tested on Xiaomi MiTV-MOEU0 / Android 14 with Denon AVR-X3400H.
+- Hide the overlay on detected TV-input viewer screens to avoid the receiver’s duplicate bar.
+- Choose six positions, horizontal/vertical layout and dark/light/black themes.
+- Customize or hide the text label; show value + maximum, value only, or no number.
+- Preview all appearance choices locally with sample data, including mute.
+- Hide the launcher icon while retaining the service and an explicit setup/settings entry.
+- Keep remote keys and audio untouched; use only activity metadata for input detection.
 
-Enable **TV Volume Overlay** in Accessibility after installing. Receiver and firmware support for
-reported volume is required; other models have not yet been verified. The displayed range is not dB.
-
-Known limitation: when viewing an AVR's HDMI input, both the AVR and this app can display a volume
-bar. Automatic hiding on TV inputs and configurable position/layout/themes are planned, not included
-in this release.
+Input detection depends on firmware and can also hide on live TV using the same viewer app.
+Version 1.0.0 remains the stable release until the new candidate is tested on an actual TV.

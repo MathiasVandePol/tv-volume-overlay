@@ -64,7 +64,15 @@ public final class MainActivity extends Activity {
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(-2, dp(48));
         buttonParams.topMargin = dp(20);
         root.addView(settings, buttonParams);
-        setContentView(root);
+        Button customize = new Button(this);
+        customize.setText(R.string.customize);
+        customize.setAllCaps(false);
+        customize.setOnClickListener(view -> startActivity(new Intent(this, AppearanceActivity.class)));
+        root.addView(customize, new LinearLayout.LayoutParams(-2, dp(48)));
+        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.addView(root);
+        setContentView(scroll);
         settings.requestFocus();
     }
     private TextView text(int resource, int sp, int color) {

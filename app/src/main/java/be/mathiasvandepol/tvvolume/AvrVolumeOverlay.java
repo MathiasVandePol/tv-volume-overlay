@@ -5,11 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
+import android.content.SharedPreferences;
+import android.annotation.SuppressLint;
 import android.graphics.PixelFormat;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.media.AudioAttributes;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
@@ -18,9 +16,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 /** Read-only AVR feedback, above apps, owned by the already-enabled accessibility service. */
 final class AvrVolumeOverlay {
@@ -35,10 +30,13 @@ final class AvrVolumeOverlay {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final AudioAttributes media = new AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MOVIE).build();
-    private LinearLayout panel;
-    private TextView valueText;
-    private TextView titleText;
-    private ProgressBar progress;
+    private VolumePanel panel;
+    private final OverlayPreferences options;
+    private final ForegroundPolicy foreground;
+    private final SharedPreferences.OnSharedPreferenceChangeListener preferenceListener = (prefs, key) -> {
+        hide();
+        panel = null;
+    };
     private boolean attached;
     private boolean registered;
     private boolean closed;
@@ -51,7 +49,9 @@ final class AvrVolumeOverlay {
         }
     };
 
-    AvrVolumeOverlay(AccessibilityService service) {
+    AvrVolumeOverlay(AccessibilityService service, ForegroundPolicy foreground) {
+        this.foreground = foreground;
+        options = new OverlayPreferences(service);
         this.service = service;
         audio = service.getSystemService(AudioManager.class);
         windows = service.getSystemService(WindowManager.class);
@@ -64,6 +64,7 @@ final class AvrVolumeOverlay {
         // Both broadcasts come from system_server. Other apps cannot drive this overlay.
         service.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
         registered = true;
+        options.store.registerOnSharedPreferenceChangeListener(preferenceListener);
     }
 
     private boolean usesArc() {
@@ -77,6 +78,7 @@ final class AvrVolumeOverlay {
 
     private void showCurrent() {
         if (closed || audio == null || windows == null) return;
+        if (foreground.suppress(options.hideInputs())) { hide(); return; }
         try {
             int value = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
             int maximum = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -85,24 +87,18 @@ final class AvrVolumeOverlay {
                 return;
             }
             boolean muted = audio.isStreamMute(AudioManager.STREAM_MUSIC);
-            if (panel == null) createPanel();
-            titleText.setText(muted ? R.string.avr_volume_muted : R.string.avr_volume_title);
-            valueText.setText(muted ? "—" : value + " / " + maximum);
-            progress.setProgress(muted ? 0 : AvrVolumeState.percent(value, maximum));
-            panel.setContentDescription(service.getString(muted ? R.string.avr_volume_muted : R.string.avr_volume_title)
-                    + ", " + (muted ? "" : value + " / " + maximum));
+            if (panel == null) panel = new VolumePanel(service, options);
+            panel.update(value, maximum, muted);
             if (!attached) {
                 WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                        dp(238), WindowManager.LayoutParams.WRAP_CONTENT,
+                        panel.panelWidth(), WindowManager.LayoutParams.WRAP_CONTENT,
                         WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
                         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                                 | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                                 | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                         PixelFormat.TRANSLUCENT);
-                params.gravity = Gravity.TOP | Gravity.END;
-                params.x = dp(34);
-                params.y = dp(115);
-                params.setTitle("AVR volume");
+                position(params);
+                params.setTitle("Volume");
                 windows.addView(panel, params);
                 attached = true;
             }
@@ -116,36 +112,19 @@ final class AvrVolumeOverlay {
         }
     }
 
-    private void createPanel() {
-        panel = new LinearLayout(service);
-        panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setPadding(dp(18), dp(14), dp(18), dp(14));
-        panel.setFocusable(false);
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(Color.argb(235, 27, 29, 33));
-        background.setCornerRadius(dp(21));
-        background.setStroke(dp(1), Color.argb(72, 255, 255, 255));
-        panel.setBackground(background);
-        LinearLayout row = new LinearLayout(service);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        titleText = new TextView(service);
-        titleText.setTextColor(Color.rgb(202, 206, 214));
-        titleText.setTextSize(15);
-        titleText.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        row.addView(titleText, new LinearLayout.LayoutParams(0, dp(30), 1));
-        valueText = new TextView(service);
-        valueText.setTextColor(Color.WHITE);
-        valueText.setTextSize(21);
-        valueText.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-        row.addView(valueText, new LinearLayout.LayoutParams(-2, dp(30)));
-        panel.addView(row);
-        progress = new ProgressBar(service, null, android.R.attr.progressBarStyleHorizontal);
-        progress.setMax(100);
-        progress.setProgressTintList(ColorStateList.valueOf(Color.WHITE));
-        progress.setProgressBackgroundTintList(ColorStateList.valueOf(Color.rgb(70, 73, 79)));
-        LinearLayout.LayoutParams line = new LinearLayout.LayoutParams(-1, dp(5));
-        line.topMargin = dp(8);
-        panel.addView(progress, line);
+    @SuppressLint("RtlHardcoded") // Positions name the physical screen edge chosen by the user.
+    private void position(WindowManager.LayoutParams params) {
+        OverlayOptions.Position position = options.position();
+        boolean top = position.name().startsWith("TOP");
+        int side = position.name().endsWith("LEFT") ? Gravity.LEFT
+                : position.name().endsWith("RIGHT") ? Gravity.RIGHT : Gravity.CENTER_HORIZONTAL;
+        params.gravity = (top ? Gravity.TOP : Gravity.BOTTOM) | side;
+        params.x = side == Gravity.CENTER_HORIZONTAL ? 0 : dp(34);
+        params.y = dp(top ? 70 : 34);
+    }
+
+    void foregroundChanged() {
+        if (foreground.suppress(options.hideInputs())) hide();
     }
 
     private int dp(int value) {
@@ -162,6 +141,7 @@ final class AvrVolumeOverlay {
 
     void close() {
         closed = true;
+        options.store.unregisterOnSharedPreferenceChangeListener(preferenceListener);
         handler.removeCallbacksAndMessages(null);
         if (registered) {
             service.unregisterReceiver(receiver);
