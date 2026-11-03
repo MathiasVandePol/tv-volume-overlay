@@ -94,8 +94,9 @@ filtering, audio mutation, polling or additional delay is introduced.
 - All six Android instrumentation tests pass on an isolated Android 37.1 emulator with the TV profile,
   including the real sample overlay, timeout, unchanged audio state and service metadata.
 - Installed signed 1.1.1-dev over 1.1.0 on the Xiaomi TV without clearing data. Both accessibility
-  services remain bound with capability mask zero. Physical remote feedback is pending; the rare
-  popup report still requires observation during normal use.
+  services remain bound with capability mask zero. The user confirmed normal volume changes,
+  held volume and mute with the real remote. The rare popup report still requires observation
+  during normal use.
 
 Limitation: Android does not reliably identify whether a CEC/audio-state change came from a remote
 button. A genuinely changed reported volume or mute state can still show the panel without a TV
