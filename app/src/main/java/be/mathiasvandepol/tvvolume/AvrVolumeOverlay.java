@@ -32,6 +32,7 @@ final class AvrVolumeOverlay {
     private VolumePanel panel;
     private final OverlayPreferences options;
     private final ForegroundPolicy foreground;
+    private final VolumeChangeTracker changes = new VolumeChangeTracker();
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceListener = (prefs, key) -> {
         hide();
         panel = null;
@@ -70,29 +71,39 @@ final class AvrVolumeOverlay {
         service.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
         registered = true;
         options.store.registerOnSharedPreferenceChangeListener(preferenceListener);
+        // Establish the baseline without showing a panel when the service starts.
+        showCurrent();
     }
 
-    private boolean usesArc() {
-        if (audio == null) return false;
+    private long arcRoute() {
+        if (audio == null) return 0;
         for (AudioDeviceInfo device : audio.getAudioDevicesForAttributes(media)) {
             int type = device.getType();
-            if (type == AudioDeviceInfo.TYPE_HDMI_ARC || type == AudioDeviceInfo.TYPE_HDMI_EARC) return true;
+            if (type == AudioDeviceInfo.TYPE_HDMI_ARC || type == AudioDeviceInfo.TYPE_HDMI_EARC) {
+                return ((long) type << 32) | (device.getId() & 0xffffffffL);
+            }
         }
-        return false;
+        return 0;
     }
 
     private void showCurrent() {
         if (closed || audio == null || windows == null) return;
-        if (foreground.suppress(options.hideInputs())) { hide(); return; }
         try {
             int value = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
             int maximum = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            if (!AvrVolumeState.shouldShow(AudioManager.STREAM_MUSIC, usesArc(), value, maximum)) {
+            boolean muted = audio.isStreamMute(AudioManager.STREAM_MUSIC);
+            long route = arcRoute();
+            // Track even on hidden input screens so their updates cannot become stale feedback later.
+            boolean changed = changes.observe(route, value, maximum, muted);
+            if (!AvrVolumeState.shouldShow(AudioManager.STREAM_MUSIC, route != 0, value, maximum)
+                    || foreground.suppress(options.hideInputs())) {
                 hide();
                 return;
             }
-            showPanel(value, maximum, audio.isStreamMute(AudioManager.STREAM_MUSIC), false);
+            // Do not attach a new window or extend the timeout for unchanged reports.
+            if (changed) showPanel(value, maximum, muted, false);
         } catch (RuntimeException error) {
+            changes.reset();
             Log.w(TAG, "Unable to read AVR state", error);
             hide();
         }
