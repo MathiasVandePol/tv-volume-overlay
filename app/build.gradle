@@ -11,8 +11,8 @@ android {
         minSdk 33
         targetSdk 35
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        versionCode (providers.gradleProperty('appVersionCode').getOrElse('10100') as int)
-        versionName providers.gradleProperty('appVersionName').getOrElse('1.1.0')
+        versionCode (providers.gradleProperty('appVersionCode').getOrElse('10101') as int)
+        versionName providers.gradleProperty('appVersionName').getOrElse('1.1.1-dev')
     }
     signingConfigs {
         if (storePath) {

@@ -74,3 +74,29 @@ and confirmed that the AVR supports half steps. Local evidence shows integer CEC
 Android’s integer media-volume state, but contains no simultaneous front-panel reading to determine
 this particular discrepancy. The user chose to retain Android/CEC without a network integration.
 The settings now clarify this limitation; no guessed calibration/decimal precision is introduced.
+
+
+# Version 1.1.1 development validation
+
+A physical-TV report described occasional unsolicited overlay popups. Inspection found that every
+media volume/mute broadcast reopened the panel, including reports whose AudioManager state had not
+changed. This is a confirmed display-trigger defect, not proof of the source of every reported popup.
+
+The candidate initializes a silent baseline, ignores identical volume/mute reports, and silently
+rebaselines when the ARC/eARC device, reported maximum, or route validity changes. State is also
+tracked on suppressed input-viewer screens. Repeated reports do not extend an already visible
+panel's timeout. Valid volume or mute changes on a stable route still display immediately; no key
+filtering, audio mutation, polling or additional delay is introduced.
+
+- 18 JVM tests pass, including duplicate reports, route/scale changes, invalid reports, mute, reset,
+  and held-volume changes through both ends of the range.
+- Release lint and signed candidate build pass.
+- All six Android instrumentation tests pass on an isolated Android 37.1 emulator with the TV profile,
+  including the real sample overlay, timeout, unchanged audio state and service metadata.
+- Installed signed 1.1.1-dev over 1.1.0 on the Xiaomi TV without clearing data. Both accessibility
+  services remain bound with capability mask zero. Physical remote feedback is pending; the rare
+  popup report still requires observation during normal use.
+
+Limitation: Android does not reliably identify whether a CEC/audio-state change came from a remote
+button. A genuinely changed reported volume or mute state can still show the panel without a TV
+remote press. The intermittent issue needs observation during normal use after installation.
